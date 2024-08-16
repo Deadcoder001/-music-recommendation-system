@@ -1,4 +1,3 @@
-/* static/css/styles.css */
 .album-image {
     width: 100%;
     max-width: 150px;
@@ -45,17 +44,5 @@
     }
     .album-image {
         max-width: 100px;
-    }
-}
-@media (max-width: 767px) {
-    .card-body {
-        text-align: center;
-        flex-direction: column;
-    }
-    .card-body img {
-        margin: 0 auto 15px;
-    }
-    .album-image {
-        max-width: 120px;
     }
 }
