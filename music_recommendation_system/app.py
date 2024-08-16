@@ -18,6 +18,10 @@ def get_recommendations(seed_tracks):
     recommendations = sp.recommendations(seed_tracks=seed_tracks, limit=5)
     return recommendations['tracks']
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/search', methods=['POST'])
 def search():
     query = request.form['query']
@@ -40,3 +44,6 @@ def search():
             } for rec in recommendations]
         })
     return jsonify({'error': 'No song found'})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
