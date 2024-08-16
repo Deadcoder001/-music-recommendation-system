@@ -4,29 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Recommendation System</title>
-
-    <link rel="icon" href="{{ url_for('static', filename='img/icon.png') }}" type="image/png">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .album-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-        }
-        .recommendations {
-            margin-top: 20px;
-        }
-    </style>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="static/css/styles.css">
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5">Music Recommendation System</h1>
+        <h1 class="mt-5 text-center">Music Recommendation System</h1>
         <form id="search-form" class="mt-4">
             <div class="form-group">
                 <input type="text" class="form-control" id="query" placeholder="Enter song or artist name" required>
             </div>
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="submit" class="btn btn-primary btn-block">Search</button>
         </form>
         <div id="results" class="mt-4"></div>
     </div>
@@ -35,51 +25,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        document.getElementById('search-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const query = document.getElementById('query').value;
-            fetch('/search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ query: query })
-            })
-            .then(response => response.json())
-            .then(data => {
-                let html = '';
-                if (data.song) {
-                    html += `
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">${data.song.name}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">${data.song.artist}</h6>
-                                <a href="${data.song.spotify_url}" class="btn btn-primary" target="_blank">Listen on Spotify</a>
-                                <img src="${data.song.album_image}" alt="Album Image" class="album-image mt-3">
-                            </div>
-                        </div>
-                    `;
-                    if (data.recommendations.length) {
-                        html += '<div class="recommendations"><h5>Recommendations</h5>';
-                        data.recommendations.forEach(rec => {
-                            html += `
-                                <div class="card mb-2">
-                                    <div class="card-body">
-                                        <h6 class="card-title">${rec.name}</h6>
-                                        <p class="card-text">${rec.artist}</p>
-                                        <a href="${rec.spotify_url}" class="btn btn-secondary" target="_blank">Listen on Spotify</a>
-                                        <img src="${rec.album_image}" alt="Album Image" class="album-image mt-2">
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        html += '</div>';
-                    }
-                } else {
-                    html = '<div class="alert alert-danger" role="alert">No song found</div>';
-                }
-                document.getElementById('results').innerHTML = html;
-            });
-        });
-    </script>
+    <!-- External JS -->
+    <script src="static/js/script.js"></script>
 </body>
 </html>

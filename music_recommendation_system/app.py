@@ -34,13 +34,13 @@ def search():
                 'name': song['name'],
                 'artist': ', '.join([artist['name'] for artist in song['artists']]),
                 'spotify_url': song['external_urls']['spotify'],
-                'album_image': song['album']['images'][0]['url']  # Album artwork URL
+                'album_image': song['album']['images'][0]['url']
             },
             'recommendations': [{
                 'name': rec['name'],
                 'artist': ', '.join([artist['name'] for artist in rec['artists']]),
                 'spotify_url': rec['external_urls']['spotify'],
-                'album_image': rec['album']['images'][0]['url']  # Album artwork URL
+                'album_image': rec['album']['images'][0]['url']
             } for rec in recommendations]
         })
     return jsonify({'error': 'No song found'})

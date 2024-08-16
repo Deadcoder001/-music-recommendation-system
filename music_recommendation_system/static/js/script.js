@@ -1,4 +1,3 @@
-// static/js/scripts.js
 document.getElementById('search-form').addEventListener('submit', function(event) {
     event.preventDefault();
     const query = document.getElementById('query').value;
@@ -13,10 +12,15 @@ document.getElementById('search-form').addEventListener('submit', function(event
         if (data.song) {
             html += `
                 <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">${data.song.name}</h5>
-                        <a href="${data.song.spotify_url}" class="btn btn-primary" target="_blank">Listen on Spotify</a>
-                        <img src="${data.song.album_image}" alt="Album Image" class="album-image mt-3">
+                    <div class="card-body text-center">
+                        <img src="${data.song.album_image}" alt="Album Image" class="album-image mb-3">
+                        <div>
+                            <h5 class="card-title">${data.song.name}</h5>
+                            <p class="card-text">${data.song.artist}</p>
+                        </div>
+                        <div class="d-flex justify-content-start mt-6">
+                            <a href="${data.song.spotify_url}" class="btn btn-primary mt-2" target="_blank">Listen on Spotify</a>
+                        </div>
                     </div>
                 </div>
             `;
