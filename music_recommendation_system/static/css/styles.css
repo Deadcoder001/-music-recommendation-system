@@ -1,0 +1,5 @@
+body { font-family: Arial, sans-serif; }
+.container { width: 50%; margin: auto; }
+.results { margin-top: 20px; }
+.song { margin-bottom: 20px; }
+.song img { border-radius: 5px; }
