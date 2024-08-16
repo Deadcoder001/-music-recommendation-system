@@ -4,17 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Recommendation System</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- External CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Music Recommendation System</h1>
-        <form id="searchForm">
-            <input type="text" id="query" placeholder="Enter song or artist name" required>
-            <button type="submit">Search</button>
+        <h1 class="mt-5 text-center">Music Recommendation System</h1>
+        <form id="search-form" class="mt-4">
+            <div class="form-group">
+                <input type="text" class="form-control" id="query" placeholder="Enter song or artist name" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Search</button>
         </form>
-        <div class="results" id="results"></div>
+        <div id="results" class="mt-4"></div>
     </div>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- External JavaScript -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
