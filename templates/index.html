@@ -1,37 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Recommendation System</title>
-    <link rel="icon" href="{{ url_for('static', filename='img/icon.png') }}" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
-
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- External CSS -->
-    <link rel="stylesheet" href="static/css/styles.css">
+    <title>Spotify Song Recommender</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background: #f7f7fa; }
+        h1 { color: #1db954; }
+        form { margin-bottom: 24px; }
+        #results img { border-radius: 8px; margin-bottom: 10px; }
+        ul { list-style: none; padding-left: 0; }
+        li { margin-bottom: 18px; }
+        .song-block { background: #fff; border-radius: 10px; padding: 18px; margin-bottom: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.09);}
+        .recommendations { margin-top: 20px; }
+        button.select-song { margin-left: 20px; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="mt-5 text-center" style="font-family: 'Lobster', cursive;">Music Recommendation System 🎸</h1>
-        
+    <h1>Spotify Song Recommender</h1>
+    <form id="search-form">
+        <input type="text" name="query" id="query" placeholder="Enter a song or artist" required>
+        <button type="submit">Search</button>
+    </form>
+    <div id="results"></div>
+    <script>
+        document.getElementById('search-form').onsubmit = async function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            let response = await fetch('/search', {
+                method: 'POST',
+                body: formData
+            });
+            let data = await response.json();
+            let resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            if (data.error) {
+                resultsDiv.textContent = data.error;
+            } else if (data.songs) {
+                resultsDiv.innerHTML = `<h2>Select your song</h2><ul>` +
+                    data.songs.map(song => `
+                        <li>
+                            <img src="${song.album_image}" width="80" alt="Album Art">
+                            <strong>${song.name}</strong> by ${song.artist}
+                            <button class="select-song" onclick='getRecommendations(${JSON.stringify(song)})'>Pick this</button>
+                            <a href="${song.spotify_url}" target="_blank" style="margin-left:12px;">Spotify Link</a>
+                        </li>
+                    `).join('') + `</ul>`;
+            }
+        };
 
-        <form id="search-form" class="mt-4">
-            <div class="form-group">
-                <input type="text" class="form-control" id="query" placeholder="Enter song or artist name" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Search</button>
-        </form>
-        <div id="results" class="mt-4"></div>
-    </div>
-
-    <!-- jQuery and Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- External JS -->
-    <script src="static/js/script.js"></script>
+        async function getRecommendations(song) {
+            let response = await fetch('/recommend', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ song_id: song.id, song_info: song })
+            });
+            let data = await response.json();
+            let resultsDiv = document.getElementById('results');
+            if (data.error) {
+                resultsDiv.textContent = data.error;
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="song-block">
+                        <h2>Main Song</h2>
+                        <img src="${song.album_image}" width="120" alt="Album Art"><br>
+                        <strong>${song.name}</strong> by ${song.artist}<br>
+                        <a href="${song.spotify_url}" target="_blank">Listen on Spotify</a>
+                    </div>
+                    <div class="song-block recommendations">
+                        <h3>Recommendations</h3>
+                        <ul>
+                            ${data.recommendations.map(rec => `
+                                <li>
+                                    <img src="${rec.album_image}" width="80" alt="Album Art">
+                                    <strong>${rec.name}</strong> by ${rec.artist}
+                                    (<a href="${rec.spotify_url}" target="_blank">Spotify</a>)
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+    </script>
 </body>
 </html>
