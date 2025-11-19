@@ -7,19 +7,13 @@ The project utilizes Flask, a lightweight and flexible Python web framework, to 
 
 With a focus on both functionality and design, the Music Recommendation System delivers a user-friendly and engaging platform for discovering new music and exploring personalized recommendations.
 
+## Link
 
-
+**Demo LInk:** (https://recommendabest.onrender.com)
 
 ## Authors
 
 - [@Ashif Elahi](https://github.com/Deadcoder001)
-
-
-## 🔗 Links
-[![Demo ](https://recommendabest.onrender.com)
-[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://deadcoder001.github.io/Portfolio-Ashif/)
-
-
 
 ## Tech Stack
 
