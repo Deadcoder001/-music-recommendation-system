@@ -4,80 +4,329 @@
     <title>Spotify Song Recommender</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; background: #f7f7fa; }
-        h1 { color: #1db954; }
-        form { margin-bottom: 24px; }
-        #results img { border-radius: 8px; margin-bottom: 10px; }
-        ul { list-style: none; padding-left: 0; }
-        li { margin-bottom: 18px; }
-        .song-block { background: #fff; border-radius: 10px; padding: 18px; margin-bottom: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.09);}
-        .recommendations { margin-top: 20px; }
-        button.select-song { margin-left: 20px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background: linear-gradient(-45deg, #000000, #1a0b2e, #11212d, #0d3b28);
+            background-size: 400% 400%;
+            animation: aurora 15s ease infinite;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        @keyframes aurora {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            font-weight: 900;
+            font-size: 3.5rem;
+            color: #1db954;
+            margin: 0 0 40px 0;
+            text-align: center;
+            letter-spacing: -2px;
+            text-shadow: 0 0 20px rgba(29, 185, 84, 0.3);
+        }
+
+        form {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 18px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+            outline: none;
+            font-family: inherit;
+            color: #121212;
+        }
+
+        input[type="text"]:focus {
+            background: #ffffff;
+            box-shadow: 0 4px 25px rgba(29, 185, 84, 0.4);
+            transform: translateY(-2px);
+        }
+
+        button {
+            padding: 0 32px;
+            border: none;
+            border-radius: 12px;
+            background-color: #1db954;
+            color: white;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: inherit;
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+        }
+
+        button:hover {
+            background-color: #1ed760;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 185, 84, 0.5);
+        }
+
+        #clear-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #clear-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #results {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 16px;
+        }
+
+        li {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        li img {
+            border-radius: 10px;
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .song-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .song-name {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .artist-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #b3b3b3;
+        }
+
+        .select-song {
+            margin-left: auto;
+            padding: 10px 20px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        a.spotify-link {
+            color: #1db954;
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 0.9rem;
+            margin-left: auto;
+            padding: 8px 16px;
+            background: rgba(29, 185, 84, 0.15);
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        a.spotify-link:hover {
+            background: rgba(29, 185, 84, 0.3);
+        }
+
+        .song-block {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .song-block h2 {
+            font-weight: 900;
+            font-size: 1.5rem;
+            margin: 0 0 20px 0;
+            color: #b3b3b3;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+        }
+        
+        .song-block img {
+            width: 220px;
+            height: 220px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .section-title {
+            font-weight: 900;
+            font-size: 1.8rem;
+            margin: 20px 0 20px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        #back-btn {
+            background-color: transparent;
+            color: #b3b3b3;
+            box-shadow: none;
+            padding: 10px 0;
+            margin-bottom: 10px;
+            width: auto;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            text-transform: none;
+        }
+
+        #back-btn:hover {
+            background-color: transparent;
+            color: #1db954;
+            transform: translateX(-5px);
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
-    <h1>Spotify Song Recommender</h1>
+    <h1>Music Recommender</h1>
     <form id="search-form">
-        <input type="text" name="query" id="query" placeholder="Enter a song or artist" required>
+        <input type="text" name="query" id="query" placeholder="Search for a song or artist..." required autocomplete="off">
         <button type="submit">Search</button>
+        <button type="button" id="clear-btn">Clear</button>
     </form>
     <div id="results"></div>
     <script>
+        let lastSearchResults = '';
+
+        function restoreResults() {
+            document.getElementById('results').innerHTML = lastSearchResults;
+        }
+
+        document.getElementById('clear-btn').onclick = function() {
+            document.getElementById('query').value = '';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('query').focus();
+            lastSearchResults = '';
+        };
+
         document.getElementById('search-form').onsubmit = async function(e) {
             e.preventDefault();
             let formData = new FormData(this);
+            let resultsDiv = document.getElementById('results');
+            
+            // Loading state
+            resultsDiv.innerHTML = '<div style="text-align:center; font-weight:700; color:#888;">Searching...</div>';
+
             let response = await fetch('/search', {
                 method: 'POST',
                 body: formData
             });
             let data = await response.json();
-            let resultsDiv = document.getElementById('results');
+            
             resultsDiv.innerHTML = '';
             if (data.error) {
-                resultsDiv.textContent = data.error;
+                resultsDiv.innerHTML = `<div style="text-align:center; font-weight:700; color:red;">${data.error}</div>`;
             } else if (data.songs) {
-                resultsDiv.innerHTML = `<h2>Select your song</h2><ul>` +
+                const resultsHTML = `<div class="section-title">Select a song</div><ul>` +
                     data.songs.map(song => `
                         <li>
-                            <img src="${song.album_image}" width="80" alt="Album Art">
-                            <strong>${song.name}</strong> by ${song.artist}
-                            <button class="select-song" onclick='getRecommendations(${JSON.stringify(song)})'>Pick this</button>
-                            <a href="${song.spotify_url}" target="_blank" style="margin-left:12px;">Spotify Link</a>
+                            <img src="${song.album_image}" alt="Album Art">
+                            <div class="song-info">
+                                <span class="song-name">${song.name}</span>
+                                <span class="artist-name">${song.artist}</span>
+                            </div>
+                            <button class="select-song" onclick='getRecommendations(${JSON.stringify(song).replace(/'/g, "&#39;")})'>Select</button>
                         </li>
                     `).join('') + `</ul>`;
+                
+                resultsDiv.innerHTML = resultsHTML;
+                lastSearchResults = resultsHTML;
             }
         };
 
         async function getRecommendations(song) {
+            let resultsDiv = document.getElementById('results');
+            // Loading state
+            resultsDiv.innerHTML = '<div style="text-align:center; font-weight:700; color:#888;">Getting recommendations...</div>';
+
             let response = await fetch('/recommend', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ song_id: song.id, song_info: song })
             });
             let data = await response.json();
-            let resultsDiv = document.getElementById('results');
+            
             if (data.error) {
-                resultsDiv.textContent = data.error;
+                resultsDiv.innerHTML = `<div style="text-align:center; font-weight:700; color:red;">${data.error}</div>`;
             } else {
                 resultsDiv.innerHTML = `
+                    <button id="back-btn" onclick="restoreResults()">← Back to Results</button>
                     <div class="song-block">
-                        <h2>Main Song</h2>
-                        <img src="${song.album_image}" width="120" alt="Album Art"><br>
-                        <strong>${song.name}</strong> by ${song.artist}<br>
-                        <a href="${song.spotify_url}" target="_blank">Listen on Spotify</a>
+                        <h2>Selected Track</h2>
+                        <img src="${song.album_image}" alt="Album Art">
+                        <div class="song-name" style="font-size: 1.8rem; margin-bottom:8px;">${song.name}</div>
+                        <div class="artist-name" style="font-size: 1.2rem; margin-bottom: 24px;">${song.artist}</div>
+                        <a href="${song.spotify_url}" target="_blank" class="spotify-link" style="margin:0;">Listen on Spotify</a>
                     </div>
-                    <div class="song-block recommendations">
-                        <h3>Recommendations</h3>
-                        <ul>
-                            ${data.recommendations.map(rec => `
-                                <li>
-                                    <img src="${rec.album_image}" width="80" alt="Album Art">
-                                    <strong>${rec.name}</strong> by ${rec.artist}
-                                    (<a href="${rec.spotify_url}" target="_blank">Spotify</a>)
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
+                    
                 `;
             }
         }
