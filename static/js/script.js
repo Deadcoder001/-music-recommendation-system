@@ -1,52 +1,79 @@
-document.getElementById('search-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const query = document.getElementById('query').value;
-    fetch('/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ query: query })
-    })
-    .then(response => response.json())
-    .then(data => {
-        let html = '';
-        if (data.song) {
-            html += `
-                <div class="card mb-4">
-                    <div class="card-body text-center">
-                        <img src="${data.song.album_image}" alt="Album Image" class="album-image mb-3">
-                        <div>
-                            <h5 class="card-title">${data.song.name}</h5>
-                            <p class="card-text">${data.song.artist}</p>
+document.getElementById('search-form').onsubmit = async function(e) {
+    e.preventDefault();
+    let formData = new FormData(this);
+    let resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '<p>Searching...</p>';
+    
+    try {
+        let response = await fetch('/search', {
+            method: 'POST',
+            body: formData
+        });
+        let data = await response.json();
+        
+        resultsDiv.innerHTML = '';
+        if (data.error) {
+            resultsDiv.textContent = data.error;
+        } else if (data.songs) {
+            resultsDiv.innerHTML = `<h2>Select your song</h2><ul class="song-list">` +
+                data.songs.map(song => `
+                    <li class="song-item">
+                        <img src="${song.album_image}" alt="Art">
+                        <div class="song-info">
+                            <strong>${song.name}</strong><br>
+                            <span>${song.artist}</span>
                         </div>
-                        <div class="d-flex justify-content-start mt-6">
-                            <a href="${data.song.spotify_url}" class="btn btn-primary mt-2" target="_blank">Listen on Spotify</a>
-                        </div>
-                    </div>
+                        <button class="select-btn" onclick='getRecommendations(${JSON.stringify(song)})'>Pick this</button>
+                    </li>
+                `).join('') + `</ul>`;
+        }
+    } catch (error) {
+        resultsDiv.textContent = 'An error occurred. Please try again.';
+    }
+};
+
+async function getRecommendations(song) {
+    let resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '<p>Getting recommendations...</p>';
+    
+    try {
+        let response = await fetch('/recommend', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ song_id: song.id })
+        });
+        let data = await response.json();
+        
+        if (data.error) {
+            resultsDiv.textContent = data.error;
+        } else {
+            resultsDiv.innerHTML = `
+                <div class="song-block main-song">
+                    <h2>Selected Song</h2>
+                    <img src="${song.album_image}" alt="Art">
+                    <h3>${song.name}</h3>
+                    <p>${song.artist}</p>
+                    <a href="${song.spotify_url}" target="_blank" class="spotify-link">Listen on Spotify</a>
+                </div>
+                <div class="recommendations-section">
+                    <h3>Recommended Songs</h3>
+                    <ul class="song-list">
+                        ${data.recommendations.map(rec => `
+                            <li class="song-item">
+                                <img src="${rec.album_image}" alt="Art">
+                                <div class="song-info">
+                                    <strong>${rec.name}</strong><br>
+                                    <span>${rec.artist}</span>
+                                </div>
+                                <a href="${rec.spotify_url}" target="_blank" class="spotify-btn">Open</a>
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <button onclick="location.reload()" class="reset-btn">Search Again</button>
                 </div>
             `;
-            if (data.recommendations.length) {
-                html += '<div class="recommendations"><h5>Recommendations</h5><div class="row">';
-                data.recommendations.forEach(rec => {
-                    html += `
-                        <div class="col-12 col-sm-6 col-md-4 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <img src="${rec.album_image}" alt="Album Image" class="album-image">
-                                    <div>
-                                        <h6 class="card-title">${rec.name}</h6>
-                                        <p class="card-text">${rec.artist}</p>
-                                        <a href="${rec.spotify_url}" class="btn btn-secondary" target="_blank">Listen on Spotify</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                html += '</div></div>';
-            }
-        } else {
-            html = '<div class="alert alert-danger" role="alert">No song found</div>';
         }
-        document.getElementById('results').innerHTML = html;
-    });
-});
+    } catch (error) {
+        resultsDiv.textContent = 'An error occurred fetching recommendations.';
+    }
+}
