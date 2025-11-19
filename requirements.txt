@@ -1,5 +1,5 @@
-Flask
-spotipy
-python-dotenv
-gunicorn
-requests
+Flask==3.0.3
+spotipy==2.24.0
+requests==2.32.3
+gunicorn==22.0.0
+python-dotenv==1.0.1
